@@ -1,0 +1,55 @@
+# Virtual environments
+cv_env/
+env/
+venv/
+ENV/
+.venv/
+
+# Python caches and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Raw Datasets & local splits (kept external per submission spec)
+split_dataset/
+data/
+egg.v1i.folder/
+datasets/
+*.zip
+*.tar.gz
+
+# Pretrained Model Weights & Checkpoints (downloaded separately)
+*.pt
+*.pth
+*.bin
+*.onnx
+weights/
+checkpoints/
+
+# Video Files & Large Media Binaries (tracked via Google Drive)
+*.mp4
+*.webm
+*.avi
+*.mov
+*.mkv
+
+# Temporary debug masks & outputs (only structured results/ preserved)
+task1_gdino_sam/
+task1_sam_auto/
+task1_sam_masks/
+task2_*/
+task4_*/
+temp/
+tmp/
+scratch/
+test_eval/
+test_run/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log

@@ -1,0 +1,2 @@
+image_1,split_1,image_2,split_2,similarity
+test\egg\not_damaged_78_jpg.rf.d3a6e8624d192abc58ff7df9d5781bb5.jpg,test,train\egg\not_damaged_27_jpg.rf.9eabbf76d6ac2d4caccb38b11e0d28ad.jpg,train,0.9667026400566101

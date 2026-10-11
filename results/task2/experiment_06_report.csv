@@ -1,0 +1,11 @@
+image,iou,dice,precision,recall,candidate_components,kept_components
+not_damaged_101_jpg.rf.479d12a2b41a5ec6d718dcdabd14b0c9.jpg,0.0,0.0,0.0,0.0,4,1
+not_damaged_153_jpg.rf.ea842e70f08e63e69bbcc74f1bc143a8.jpg,0.0,0.0,0.0,0.0,2,1
+not_damaged_100_jpg.rf.5d780a6024004fa2f68741fa56ddf4c9.jpg,0.0,0.0,0.0,0.0,2,1
+not_damaged_103_jpg.rf.c0bd961caec5acf3a6582c9cb2551634.jpg,1.0,1.0,0.0,1.0,2,0
+not_damaged_105_jpg.rf.6b94b57d4e4cb521abbec55bb95c2a76.jpg,0.0,0.0,0.0,0.0,6,4
+not_damaged_113_jpg.rf.75e3389c0809c7c0f42fbfd25219e65e.jpg,0.0,0.0,0.0,0.0,8,5
+not_damaged_114_jpg.rf.7ccf87a5610bafd963468463b2e2907c.jpg,0.0,0.0,0.0,0.0,5,5
+not_damaged_121_jpg.rf.0506fe180f5fed88ae65348130fb5192.jpg,0.0,0.0,0.0,0.0,4,2
+not_damaged_124_jpg.rf.931f62b8d40a093039633b898e0e9114.jpg,0.0,0.0,0.0,0.0,6,4
+not_damaged_128_jpg.rf.95a7ef96dcc9e14fa7137708df6f2e60.jpg,0.0,0.0,0.0,0.0,4,2

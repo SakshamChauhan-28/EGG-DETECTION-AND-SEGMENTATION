@@ -1,0 +1,16 @@
+{
+    "dataset_root": "C:\\Users\\Saksh\\Downloads\\egg.v1i.folder",
+    "total_images": 110,
+    "splits": {
+        "test": 11,
+        "train": 77,
+        "valid": 22
+    },
+    "dimensions": {
+        "640x640": 110
+    },
+    "formats": {
+        "JPEG": 110
+    },
+    "exact_duplicate_groups": 0
+}
