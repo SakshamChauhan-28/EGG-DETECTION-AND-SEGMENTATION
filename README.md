@@ -1,7 +1,5 @@
 # Egg Detection, Classical Segmentation, Evaluation, and Video Tracking
 ### Computer Vision Intern Assignment — Nosh Robotics, Bangalore
-**Author:** Saksham Chauhan  
-**Target Repository:** [https://github.com/SakshamChauhan-28/EGG-DETECTION-AND-SEGMENTATION](https://github.com/SakshamChauhan-28/EGG-DETECTION-AND-SEGMENTATION)
 
 ---
 
@@ -205,8 +203,4 @@ pip install -r requirements.txt
 
 ---
 
-## 6. License & Attribution
-
-- **Dataset:** Roboflow Universe ([Egg Detection Dataset](https://universe.roboflow.com/fire-bf7qe/egg-vzhtr)), licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
-- **Codebase:** Open-sourced under the [MIT License](LICENSE).
-- **Organization:** Prepared for technical evaluation at **Nosh Robotics, Bangalore**.
+.
