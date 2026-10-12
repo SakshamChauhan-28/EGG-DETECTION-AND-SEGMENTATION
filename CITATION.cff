@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you reference or use this methodology in your evaluation, please cite as below."
+authors:
+  - family-names: Chauhan
+    given-names: Saksham
+title: "Egg Detection and Segmentation: Nosh Robotics Computer Vision Assignment"
+version: 1.0.0
+date-released: 2026-10-12
+url: "https://github.com/SakshamChauhan-28/EGG-DETECTION-AND-SEGMENTATION"

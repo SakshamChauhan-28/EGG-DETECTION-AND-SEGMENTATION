@@ -1,55 +1,80 @@
-# Virtual environments
-cv_env/
-env/
-venv/
-ENV/
-.venv/
-
-# Python caches and bytecode
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+cv_env/
+venv/
+ENV/
+env/
+.env
+
+# Editor & OS artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+structure.txt
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Pytest / Mypy caches
 .pytest_cache/
-.ipynb_checkpoints/
+.mypy_cache/
 
-# Raw Datasets & local splits (kept external per submission spec)
-split_dataset/
-data/
-egg.v1i.folder/
-datasets/
-*.zip
-*.tar.gz
-
-# Pretrained Model Weights & Checkpoints (downloaded separately)
+# Large Model Weights and Binaries (Downloaded dynamically)
 *.pt
 *.pth
 *.bin
 *.onnx
 weights/
-checkpoints/
 
-# Video Files & Large Media Binaries (tracked via Google Drive)
-*.mp4
+# Raw Videos & Oversized Video Outputs (Exceeded GitHub 100MB limit / Provided via Public Drive)
 *.webm
-*.avi
-*.mov
-*.mkv
+task4_final_tracking/*.mp4
+task4_v*_output/*.mp4
+task4_v*/*.mp4
+TASK 4/demo/*.mp4
 
-# Temporary debug masks & outputs (only structured results/ preserved)
+# Temporary legacy directories to be cleaned or archived
+experiments/
+results/
+src/
+docs/
+split_dataset/
+dataset_report/
+report_assets/
 task1_gdino_sam/
-task1_sam_auto/
-task1_sam_masks/
-task2_*/
-task4_*/
-temp/
-tmp/
-scratch/
-test_eval/
-test_run/
-
-# OS specific files
-.DS_Store
-Thumbs.db
-desktop.ini
-*.log
+task1_segmentation/
+task2_experiment_*/
+task2_final_evaluation/
+task4_final_tracking/
+task4_v*/
+task4_video/

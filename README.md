@@ -1,183 +1,212 @@
-# Egg Detection, Segmentation & Multi-Object Tracking
-### Computer Vision Internship Assignment — Nosh Robotics
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![PyTorch 2.6](https://img.shields.io/badge/PyTorch-2.6%2Bcu124-red.svg)](https://pytorch.org/)
-[![OpenCV](https://img.shields.io/badge/OpenCV-4.11-green.svg)](https://opencv.org/)
-
-This repository contains the complete engineering, research, and experimental implementation for the **Nosh Robotics Computer Vision Intern Assignment**. The project addresses the automated detection, segmentation, and continuous multi-object tracking of eggs in complex domestic kitchen environments under severe occlusions, specular reflections, camera motion, and varying illuminance.
+# Egg Detection, Classical Segmentation, Evaluation, and Video Tracking
+### Computer Vision Intern Assignment — Nosh Robotics, Bangalore
+**Author:** Saksham Chauhan  
+**Target Repository:** [https://github.com/SakshamChauhan-28/EGG-DETECTION-AND-SEGMENTATION](https://github.com/SakshamChauhan-28/EGG-DETECTION-AND-SEGMENTATION)
 
 ---
 
-## 📌 Executive Summary & Key Results
+### 📌 Public Deliverables & Drive Access Links
 
-| Assignment Task | Methodology & Architecture | Dataset Scope | Key Evaluation Metric | Performance & Verification |
-| :--- | :--- | :--- | :--- | :--- |
-| **Data Leakage Audit** | ResNet-18 + HSV Scene Grouping | 110 raw images | Pairwise Cosine Similarity | Identified **0.9667** photographic duplicate pair; designed 4:1 group-aware split (88 dev / 22 eval). |
-| **Task 1: Foundation Segmenter** | Grounding DINO Tiny + SAM 2.1 Tiny | 88 Dev / 22 Eval | Detection & Mask Completeness | **100% (110/110)** zero-shot pseudo-GT mask generation without human annotation. |
-| **Task 2: Classical Segmenter** | Algorithm E1 (LAB lightness + HSV saturation) | 88 Dev (E1–E8 iterations) | Pixel IoU / Dice | E1 achieved **0.3392 Mean IoU** on 88 dev images; proved resilient against catastrophic collapse seen in E2/E6. |
-| **Task 3: Comparative Overlap** | Task 2 Classical vs. Task 1 Pseudo-GT | 22 Held-Out Eval | Overlap IoU, Dice, Recall | **0.3506 Mean IoU**, **0.4936 Mean Dice**, **0.8223 Recall**. Zero development overfitting. |
-| **Task 4: Video Multi-Object Tracking** | Grounding DINO Tiny + SORT (Kalman + Hungarian) | 60.04s video (1,441 frames) | Continuous Multi-Object MOT | 19 track IDs maintained across 1,435 frames; robust re-identification during rapid pan and hand occlusions. |
+> - 📄 **Complete Technical Report (PDF):**  
+>   [https://drive.google.com/file/d/1z3NqJekPECgqXZN-NxWknRqwoE1C_gnp/view?usp=sharing](https://drive.google.com/file/d/1z3NqJekPECgqXZN-NxWknRqwoE1C_gnp/view?usp=sharing)
+>
+> - 🎥 **Full Video Tracking Output Demonstration (MP4):**  
+>   [https://drive.google.com/file/d/1eiu521OtXV-wBelTvI9uoibKpDdwo55m/view?usp=sharing](https://drive.google.com/file/d/1eiu521OtXV-wBelTvI9uoibKpDdwo55m/view?usp=sharing)
 
 ---
 
-## 📁 Repository Structure
+## 1. Assignment Overview
 
-```
-├── .gitignore                      # Git exclusion rules for large datasets and weights
-├── LICENSE                         # MIT License
-├── README.md                       # Master repository overview and executive scorecard
-├── requirements.txt                # Curated Python dependencies
-├── docs/                           # Technical documentation and audit logs
-│   ├── dataset.md                  # Leakage audit, similarity analysis, and split architecture
-│   ├── experiments.md              # Master experiment log (Task 1, Task 2 E1–E8, Task 4 V1–V8)
-│   ├── methodology.md              # Mathematical and algorithmic formulations
-│   └── reproduction.md             # End-to-end execution and CLI reproduction guide
-├── src/                            # Clean, production-grade source code
-│   ├── common/                     # Shared computer vision utilities & metrics
-│   │   ├── utils.py                # IoU, Dice, Precision, Recall, and bbox conversion
-│   │   └── __init__.py
-│   ├── task1/                      # Task 1 Foundation Model Segmentation
-│   │   ├── pipeline.py             # Grounding DINO Tiny + SAM 2.1 Tiny pipeline
-│   │   └── __init__.py
-│   ├── task2/                      # Task 2 Classical Image Processing
-│   │   ├── baseline_e1.py          # Classical Algorithm E1 dual-thresholding segmenter
-│   │   └── __init__.py
-│   ├── task3/                      # Task 3 Quantitative Comparative Evaluation
-│   │   ├── evaluate.py             # Overlap metrics evaluator (Dev & Eval sets)
-│   │   └── __init__.py
-│   └── task4/                      # Task 4 Multi-Object Video Tracking
-│       ├── tracker.py              # SORT Kalman + Hungarian tracking pipeline
-│       └── __init__.py
-├── scripts/                        # Dataset audits, grouping, and report builders
-│   ├── 01_dataset_analysis.py      # Initial dataset statistics
-│   ├── 02_create_contact_sheet.py  # Visual contact sheet generator
-│   ├── 03_similarity_analysis.py   # Pairwise cosine visual similarity auditor
-│   ├── 06_scene_grouping.py        # Feature-based scene clustering
-│   ├── 07_create_leakage_aware_split.py # Leakage-free 4:1 split generator
-│   ├── prepare_report_assets.py    # Figure extraction and montage builder
-│   └── build_full_report.py        # Publication-grade PDF report compiler
-├── experiments/                    # Historical experimental scripts and ablation studies
-│   ├── task1/                      # Task 1 experiments (08-20: SAM box prompts, ViT, text prompts)
-│   ├── task2/                      # Task 2 experiments (22-29: E1–E8 thresholding, adaptive, watershed)
-│   └── task4/                      # Task 4 experiments (31-35: SORT, DeepSORT, confidence sweeps)
-├── results/                        # Verifiable CSV/JSON benchmark data
-│   ├── dataset/                    # Split manifests and similarity matrices
-│   ├── task1/                      # Pseudo-GT validation logs
-│   ├── task2/                      # E1–E8 metric CSVs
-│   └── task4/                      # Video tracking telemetry logs
-└── reports/                        # Publication documents & visual assets
-    ├── Nosh_Robotics_CV_Assignment_Report.pdf   # 29-page comprehensive technical project report
-    ├── Nosh_Robotics_CV_Assignment_Report.docx  # Editable technical project report
-    └── figures/                                 # Report diagrams and qualitative visual montages
+This repository houses the complete engineering deliverables for the Nosh Robotics Computer Vision Assignment. The task spans four core technical objectives:
+1. **Task 1 — Pretrained Foundation Segmentation:** Zero-shot open-vocabulary detection and promptable instance segmentation (Grounding DINO + SAM 2.1) to generate rigorous empirical pseudo-ground-truth reference masks.
+2. **Task 2 — Classical Image Processing (Experiments E1–E8):** Algorithmic exploration of 8 non-neural classical segmentation hypotheses, benchmarked against Task 1 masks to establish the optimal classical pipeline (Dual HSV / CIE LAB Percentile Thresholding).
+3. **Task 3 — Quantitative & Qualitative Benchmarking:** Empirical evaluation protocol computing pixel-level IoU, Dice coefficient, precision, and recall on an unseen, leakage-isolated evaluation partition.
+4. **Task 4 — Video Processing & Identity Tracking:** Temporal tracking under high-speed spinning motion, severe human hand occlusions, and table reflections using an open-vocabulary DINO + SORT (Kalman Filter + Hungarian Matching) tracker.
+
+---
+
+## 2. Pipeline Architecture
+
+```mermaid
+flowchart TD
+    subgraph S1["Dataset Partitioning & Forensic Audit"]
+        D0["110 Raw Roboflow Images"] --> D1["Pairwise Similarity Audit (ResNet-18)"]
+        D1 --> D2["Graph Connected Components (Tau = 0.82)"]
+        D2 --> D3["Leakage-Aware Split<br/>(88 Dev / 22 Eval)"]
+    end
+
+    subgraph S2["Task 1: Pretrained Foundation Segmentation"]
+        D3 --> T1_1["Grounding DINO Tiny<br/>(Open-Vocabulary 'egg.')"]
+        T1_1 --> T1_2["Box Prompts B"]
+        T1_2 --> T1_3["SAM 2.1 Tiny Mask Decoder"]
+        T1_3 --> T1_4["Pseudo-Ground-Truth Reference Masks<br/>(131 Dev / 23 Eval)"]
+    end
+
+    subgraph S3["Task 2: Classical Vision (E1-E8)"]
+        D3 --> T2_1["Classical Experiments E1-E8"]
+        T2_1 --> T2_2["Winner: E01 Dual HSV/LAB Percentile Gating"]
+        T2_2 --> T2_3["Classical Binary Masks"]
+    end
+
+    subgraph S4["Task 3: Quantitative Overlap Benchmark"]
+        T1_4 --> T3_1["IoU, Dice, Precision, Recall"]
+        T2_3 --> T3_1
+        T3_1 --> T3_2["Eval Scorecard (N = 22)<br/>Mean IoU: 0.3507 | Recall: 0.8223"]
+    end
+
+    subgraph S5["Task 4: Temporal Video Tracking"]
+        V0["Video Sequence (1,441 frames @ 24fps)"] --> T4_1["Grounding DINO Detector (Stride = 3)"]
+        T4_1 --> T4_2["Kalman State Filter & Prediction"]
+        T4_2 --> T4_3["IoU Association (Hungarian Algorithm)"]
+        T4_3 --> T4_4["1,441 Frames Processed<br/>Zero Hand Hijackings"]
+    end
 ```
 
 ---
 
-## 🔬 Scientific Highlights & Engineering Journey
+## 3. Repository Architecture
 
-### 1. The Dataset Leakage Discovery
-Prior to modeling, a pairwise image similarity analysis across the 110-image Roboflow dataset revealed an extreme vulnerability:
-- Image `not_damaged_78` in the test set had a **0.9667 cosine visual similarity** to `not_damaged_27` in the train set.
-- They represented identical photographic burst shots of the same frying pan with identical egg placement.
-- **Solution:** A feature-based clustering system (ResNet-18 visual embeddings + HSV color histograms @ 0.82 threshold) partitioned the dataset into 21 distinct scene groups, enforcing a group-aware 4:1 partition (88 development / 22 held-out evaluation) where no visual scene co-exists across splits.
+The repository strictly enforces the required six-folder structure:
 
-### 2. Task 1: Zero-Shot Foundation Segmentation
-Using open-vocabulary **Grounding DINO Tiny** (`prompt="egg."`, box threshold $0.25$, text threshold $0.20$) paired with **SAM 2.1 Tiny** bounding-box prompting, the pipeline achieved 100% coverage on both development and evaluation splits, producing high-fidelity pseudo-GT masks without human annotation overhead.
-
-### 3. Task 2: Classical Segmentation & Iteration Journey (E1 to E8)
-Rather than tuning on a single image, 8 distinct classical algorithms were rigorously evaluated:
-- **Algorithm E1 (Winner):** Dynamic 65th percentile lightness threshold in CIE-LAB space coupled with HSV saturation upper bound ($S \le 100$), $7 \times 7$ morphological opening/closing, and connected component filtering ($\text{area} \ge 500$, $\text{solidity} \ge 0.70$).
-  - **88 Dev Images:** Mean IoU **0.3392**, Median IoU **0.3015**, Mean Recall **0.7315**.
-- **Failed Approaches Documented:**
-  - *E2 (Adaptive Gaussian):* Recall spiked to $0.9673$, but IoU collapsed to $0.2556$ due to rampant countertop over-segmentation.
-  - *E6 (Aggressive Aspect/Solidity):* Suffered catastrophic structural collapse (Mean IoU $0.1000$) on non-canonical viewing angles.
-  - *E7 (Spatial Prior Masking):* Showed promising pilot gains ($0.3833$) on centered test shots but failed to generalize on off-center kitchen compositions ($0.3277$).
-
-### 4. Task 3: Held-Out Overlap Evaluation
-Algorithm E1 was evaluated on the 22 held-out images against frozen Task 1 pseudo-GT masks:
-- **Mean IoU:** **0.3506 ± 0.1634**
-- **Median IoU:** **0.3401**
-- **Mean Dice:** **0.4936 ± 0.1878**
-- **Mean Precision:** **0.3822 ± 0.1702**
-- **Mean Recall:** **0.8223 ± 0.2307**
-The evaluation metrics slightly outperformed development figures, proving **zero development overfitting** and true photometric generalizability.
-
-### 5. Task 4: Video Tracking Under Occlusions (SORT)
-Using continuous Grounding DINO Tiny detections fused with a Kalman filter and Hungarian assignment ($\text{max\_age}=20$, $\text{min\_hits}=3$, $\text{IoU\_threshold}=0.30$):
-- Processed 1,441 frames (60.04s @ 24 FPS).
-- Maintained 19 persistent track IDs across 1,435 predicted frames, successfully re-associating egg identities after hand occlusions and spatula flips.
-- **[Public Video Demonstration (Google Drive)](https://drive.google.com/file/d/1eiu521OtXV-wBelTvI9uoibKpDdwo55m/view?usp=sharing)**
+```text
+EGG-DETECTION-AND-SEGMENTATION/
+├── README.md                          # Main repository technical documentation
+├── LICENSE                            # MIT Open Source License
+├── requirements.txt                   # Tested dependency declarations
+├── pyproject.toml                     # Python packaging & build configuration
+├── CITATION.cff                       # Citation metadata
+│
+├── DATASET/                           # Leakage-aware dataset, manifests & audit scripts
+│   ├── README.md                      # Dataset provenance, license & leakage documentation
+│   ├── manifests/                     # development.csv, evaluation.csv, scene_groups.csv
+│   ├── development/                   # 88 development images & reference masks
+│   ├── evaluation/                    # 22 evaluation images & reference masks
+│   ├── analysis/                      # Contact sheets, PCA similarity plots, JSON summaries
+│   └── scripts/                       # Dataset analysis, split creator & validate_dataset.py
+│
+├── TASK 1/                            # Pretrained foundation segmentation (Zero-shot pseudo-GT)
+│   ├── README.md                      # Model evolution, configuration & reproduction guide
+│   ├── scripts/                       # Grounding DINO + SAM 2 pipeline scripts
+│   ├── masks/                         # 131 instance masks for development set
+│   ├── visualizations/                # Bounding box & segmentation overlay previews
+│   ├── reports/                       # Detection confidence and area CSV logs
+│   └── experiments/                   # Early exploratory attempts & evaluation split masks
+│
+├── TASK 2/                            # Classical image processing (Experiments E1-E8)
+│   ├── README.md                      # Problem formulation, E1-E8 summary & reproduction
+│   ├── experiments/                   # Dedicated folders for E01 through E08
+│   │   ├── E01/ to E08/               # README, scripts, masks, visualizations, metrics CSV
+│   ├── final_evaluation/              # Winning E01 evaluated on unseen evaluation split
+│   └── reports/                       # Aggregated performance reports
+│
+├── TASK 3/                            # Segmentation evaluation & comparative benchmarks
+│   ├── README.md                      # Mathematical metric definitions & evaluation scorecard
+│   ├── scripts/                       # CLI evaluation script (evaluate.py) & common utils
+│   ├── metrics/                       # Per-image evaluation CSV reports
+│   └── visualizations/                # Best, median, and worst qualitative comparison panels
+│
+├── TASK 4/                            # Video processing & multi-object identity tracking
+│   ├── README.md                      # Video challenges, tracker evolution & telemetry
+│   ├── scripts/                       # Grounding DINO + SORT production pipeline & prototypes
+│   ├── tracking/                      # Frame-by-frame tracking telemetry CSV log
+│   ├── visualizations/                # Extracted frame snapshots & tracking overlays
+│   └── demo/                          # Public video demonstration details & external links
+│
+└── REPORT/                            # Comprehensive assignment documentation suite
+    ├── README.md                      # Report index, drive links & asset manifest
+    ├── assignment_report.md           # Executive report & findings
+    ├── methodology.md                 # Detailed mathematical formulations
+    ├── experimental_results.md        # Full tabular records of all trials & failures
+    ├── dataset_and_leakage_analysis.md# Forensic audit of cross-split duplication
+    ├── limitations.md                 # Honest discussion of failure modes & trade-offs
+    ├── reproducibility.md             # End-to-end command reproduction manual
+    └── figures/                       # High-resolution report figures and montage assets
+```
 
 ---
 
-## 🚀 Quickstart & Reproduction
+## 4. Key Experimental Results & Scorecards
 
-### Installation
+### Task 1: Foundation Model Validation
+- **Architecture:** `IDEA-Research/grounding-dino-tiny` + `sam2.1_hiera_tiny.pt`
+- **Success Rate:** $100\%$ across all 110 dataset frames ($88$ dev, $22$ eval).
+- **Instance Counts:** 1 egg: 60 images | 2 eggs: 14 images | 3 eggs: 13 images | 4 eggs: 1 image.
+
+### Task 2: Classical Image Processing (Development Set $N = 88$)
+| Experiment | Paradigm | Mean IoU | Median IoU | Mean Dice | Precision | Recall | Status |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **E01** | **Dual HSV + LAB Percentile Gating** | **0.3392** | **0.3015** | **0.4700** | **0.3820** | **0.7315** | ✅ **Selected Winner** |
+| **E02** | Local Adaptive Gaussian Thresholding | 0.2556 | 0.1874 | 0.3858 | 0.2689 | **0.9673** | ❌ Background noise flood |
+| **E03** | Canny Multi-Scale Contour Closing | 0.1913 | 0.0000 | 0.2559 | 0.3981 | 0.1917 | ❌ Broken edge contours |
+| **E04** | E01 + Geometric Elliptical Gating | 0.2420 | 0.0908 | 0.3068 | 0.3972 | 0.2761 | ❌ Discarded touching eggs |
+| **E05** | Hybrid GrabCut Energy Minimization | 0.2670 | 0.2374 | 0.3611 | 0.4489 | 0.4050 | ❌ Shadowed halves cut |
+| **E06** | Multi-Feature Morphological Gating | 0.1000 | 0.0000 | 0.1000 | 0.0000 | 0.1000 | ❌ Catastrophic over-pruning |
+| **E07** | E01 + Spatial Distance Transform Decay | 0.3277 | 0.2703 | 0.4580 | 0.3674 | 0.7345 | ❌ Pilot overfit; degraded on dev |
+| **E08** | Direct Algebraic Ellipse Fitting | 0.2046 | 0.0000 | 0.2476 | 0.3030 | 0.2588 | ❌ Median collapsed to 0.0 |
+
+### Task 3: Unseen Evaluation Partition ($N = 22$)
+| Metric | Value | Interpretation |
+| :--- | :---: | :--- |
+| **Evaluated Images** | **22** | Independent, leakage-isolated evaluation partition |
+| **Mean IoU** | **0.3507** | Reliable segmentation across varied kitchen scenes |
+| **Median IoU** | **0.3401** | High consistency; zero catastrophic failure modes |
+| **Mean Dice (F1)** | **0.4936** | Harmonic mean reflecting consistent boundary alignment |
+| **Mean Precision** | **0.3822** | Limited by pale background over-segmentation |
+| **Mean Recall** | **0.8223** | High sensitivity; isolates >82% of true egg foreground mass |
+
+### Task 4: Video Identity Tracking Telemetry
+- **Video Input:** $1920 \times 1080$, 24.0 fps, 60.04s ($1,441$ frames) of spinning eggs.
+- **Full Video Coverage:** $1,441 / 1,441$ frames ($100\%$).
+- **Tracker:** Grounding DINO Tiny (stride 3) + SORT (Kalman state predictor).
+- **False Hand Tracks:** **0** (Zero hand hijackings).
+- **Dominant Track Lengths:** Track 3 ($22.25$s), Track 4 ($12.13$s), Track 11 ($11.88$s).
+
+---
+
+## 5. Installation & Reproduction
+
+### Prerequisites
+- Python 3.9+ (Python 3.10/3.11 recommended)
+- PyTorch 2.0+ with CUDA support (for Task 1 & Task 4 foundation models)
+
+### Setup
 ```bash
-git clone https://github.com/SakshamChauhan-28/IMAGE-DETECTION-AND-SEGMENTATION.git
-cd IMAGE-DETECTION-AND-SEGMENTATION
-python -m venv cv_env
-source cv_env/bin/activate  # On Windows: .\cv_env\Scripts\Activate.ps1
+git clone https://github.com/SakshamChauhan-28/EGG-DETECTION-AND-SEGMENTATION.git
+cd EGG-DETECTION-AND-SEGMENTATION
 pip install -r requirements.txt
 ```
 
-### Run Classical Segmentation (Task 2)
-```bash
-python -m src.task2.baseline_e1 \
-    --input_dir "data/eval_images" \
-    --output_dir "results/task2/masks_eval" \
-    --l_percentile 65 \
-    --s_max 100
-```
+### Reproducibility Commands
 
-### Run Quantitative Evaluation (Task 3)
-```bash
-python -m src.task3.evaluate \
-    --pred_dir "results/task2/masks_eval" \
-    --gt_dir "results/task1/masks_eval" \
-    --output_csv "results/task3/eval_summary.csv"
-```
+1. **Verify Dataset Integrity and Split Leakage:**
+   ```bash
+   python DATASET/scripts/validate_dataset.py
+   ```
 
-### Run Video Multi-Object Tracker (Task 4)
-```bash
-python -m src.task4.tracker \
-    --video_path "data/egg_video.mp4" \
-    --output_video "results/task4/tracked_output.mp4" \
-    --output_csv "results/task4/tracking_log.csv"
-```
+2. **Run Classical Baseline (Experiment E01):**
+   ```bash
+   python "TASK 2/experiments/E01/scripts/22_task2_baseline.py"
+   ```
 
-For full details, flags, and dataset preparation steps, refer to [Reproduction Guide](docs/reproduction.md).
+3. **Evaluate Segmentation Predictions against Pseudo-GT:**
+   ```bash
+   python "TASK 3/scripts/evaluate.py" \
+     --pred-dir "TASK 2/final_evaluation/masks" \
+     --gt-dir "DATASET/evaluation/reference_masks" \
+     --output-csv "TASK 3/metrics/evaluation_report.csv"
+   ```
 
----
-
-## 📑 Technical Project Report
-
-A publication-grade, 29-page technical engineering report has been compiled and included in this repository:
-- **PDF Report:** [`reports/Nosh_Robotics_CV_Assignment_Report.pdf`](reports/Nosh_Robotics_CV_Assignment_Report.pdf)
-- **Word Document:** [`reports/Nosh_Robotics_CV_Assignment_Report.docx`](reports/Nosh_Robotics_CV_Assignment_Report.docx)
-
-The report details all executive summaries, problem formulations, failure mode diagnostic panels, mathematical formulations, and engineering trade-offs.
+4. **Run Temporal Video Tracking:**
+   ```bash
+   python "TASK 4/scripts/35_task4_gdino_sort.py" \
+     --video-path "path/to/video.webm" \
+     --output-dir "TASK 4/tracking"
+   ```
 
 ---
 
-## ⚖️ Limitations & Engineering Trade-offs
+## 6. License & Attribution
 
-1. **Illuminance Over-Segmentation:** Classical Algorithm E1 relies on luminance percentiles. In scenes featuring polished granite, stainless steel pans, or porcelain bowls, high-specularity surfaces share perceptual luminance with egg whites, bounding precision to $\approx 0.38$.
-2. **SORT Linear Motion Prior:** The constant-velocity Kalman model performs exceptionally during translation but relies heavily on continuous detections during erratic spatula flips. Incorporating DeepSORT appearance embeddings (ReID) is the recommended next step for extended occlusions.
-3. **Pseudo-GT Edge Softness:** While SAM 2.1 produces crisp contours, extreme motion blur in video frames occasionally softens mask boundaries.
-
----
-
-## 🤖 AI Disclosure & Methodology
-
-In alignment with standard engineering integrity and startup submission requirements:
-- Large Language Models (LLMs) and foundation models were utilized as development and research tools for script refactoring, metric analysis scaffolding, and drafting documentation.
-- All computer vision pipelines, mathematical formulations, experimental splits, metric evaluations, and video tracking executions were run, validated, and verified locally on actual data.
-
----
-
-## 📜 License
-
-This project is licensed under the [MIT License](LICENSE).
+- **Dataset:** Roboflow Universe ([Egg Detection Dataset](https://universe.roboflow.com/fire-bf7qe/egg-vzhtr)), licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+- **Codebase:** Open-sourced under the [MIT License](LICENSE).
+- **Organization:** Prepared for technical evaluation at **Nosh Robotics, Bangalore**.
